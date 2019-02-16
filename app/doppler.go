@@ -24,8 +24,7 @@ func (whsvr *WebhookServer) getEnvFromDoppler(pipeline, environment string) ([]c
 	req.Header.Set("client-sdk", "api")
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := whsvr.client.Do(req)
 	if err != nil {
 		return nil, err
 	}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/golang/glog"
 )
@@ -44,6 +45,9 @@ func main() {
 		server: &http.Server{
 			Addr:      fmt.Sprintf(":%v", 443),
 			TLSConfig: &tls.Config{Certificates: []tls.Certificate{pair}},
+		},
+		client: &http.Client{
+			Timeout: time.Duration(15 * time.Second),
 		},
 	}
 

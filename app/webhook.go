@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
 	v1beta1 "k8s.io/api/admission/v1beta1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
@@ -42,15 +40,10 @@ const (
 
 type WebhookServer struct {
 	server      *http.Server
+	client      *http.Client
 	apiKey      string
 	pipeline    string
 	environment string
-}
-
-type Config struct {
-	Containers []corev1.Container `yaml:"containers"`
-	Volumes    []corev1.Volume    `yaml:"volumes"`
-	Env        []corev1.EnvVar    `yaml:"env"`
 }
 
 type patchOperation struct {
@@ -65,31 +58,6 @@ func init() {
 	// defaulting with webhooks:
 	// https://github.com/kubernetes/kubernetes/issues/57982
 	_ = v1.AddToScheme(runtimeScheme)
-}
-
-// (https://github.com/kubernetes/kubernetes/issues/57982)
-func applyDefaultsWorkaround(containers []corev1.Container, volumes []corev1.Volume) {
-	defaulter.Default(&corev1.Pod{
-		Spec: corev1.PodSpec{
-			Containers: containers,
-			Volumes:    volumes,
-		},
-	})
-}
-
-func loadConfig(configFile string) (*Config, error) {
-	data, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		return nil, err
-	}
-	glog.Infof("New configuration: sha256sum %x", sha256.Sum256(data))
-
-	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, err
-	}
-
-	return &cfg, nil
 }
 
 // Check whether the target resoured need to be mutated
