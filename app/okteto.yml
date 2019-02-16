@@ -1,0 +1,14 @@
+swap:
+  deployment:
+    name: doppler-injector-webhook-deployment
+    image: golang:1
+    command:
+    - tail
+    - -f
+    - /dev/null
+environment:
+  - GO111MODULE=on
+mount:
+  target: /app
+scripts:
+  hello: echo Your cluster ♥s you
