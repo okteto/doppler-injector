@@ -1,0 +1,22 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: doppler-injector-webhook-cfg
+  labels:
+    app: doppler-injector
+webhooks:
+  - name: injector.doppler.com
+    clientConfig:
+      service:
+        name: doppler-injector-webhook-svc
+        namespace: doppler-injector
+        path: "/mutate"
+      caBundle: ${CA_BUNDLE}
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+    namespaceSelector:
+      matchLabels:
+        doppler-injector: enabled
