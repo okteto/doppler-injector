@@ -10,7 +10,7 @@ The deployment should provide the following annotations:
 - `injector.doppler.com/environment: "prod"`
 - `injector.doppler.com/pipeline: "100"`
 
-If any of this is missing, the default value will be used.
+If any of this is missing, the default value will be used. A sample of a deployment configured to use the injector [is available here](deployment/sample.yaml).
 
 
 This is heavily based on https://github.com/morvencao/kube-mutating-webhook-tutorial
