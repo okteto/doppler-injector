@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -15,10 +15,10 @@ type dopplerResponse struct {
 	Keys     map[string]string `json:"keys"`
 }
 
-func (whsvr *WebhookServer) getEnvFromDoppler(pipeline, environment string) ([]corev1.EnvVar, error) {
+func (whsvr *webhookServer) getEnvFromDoppler(pipeline, environment string) ([]corev1.EnvVar, error) {
 	url := fmt.Sprintf("https://api.doppler.com/environments/%s/fetch_keys", environment)
 
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := retryablehttp.NewRequest("POST", url, nil)
 	req.Header.Set("api-key", whsvr.apiKey)
 	req.Header.Set("pipeline", pipeline)
 	req.Header.Set("client-sdk", "api")

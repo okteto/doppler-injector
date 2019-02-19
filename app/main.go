@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 )
 
 func main() {
@@ -38,7 +39,12 @@ func main() {
 		glog.Errorf("Filed to load key pair: %v", err)
 	}
 
-	whsvr := &WebhookServer{
+	client := retryablehttp.NewClient()
+	client.RetryWaitMin = 800 * time.Millisecond
+	client.RetryWaitMax = 1200 * time.Millisecond
+	client.Backoff = retryablehttp.LinearJitterBackoff
+
+	whsvr := &webhookServer{
 		apiKey:      apiKey,
 		pipeline:    pipeline,
 		environment: environment,
@@ -46,9 +52,7 @@ func main() {
 			Addr:      fmt.Sprintf(":%v", 443),
 			TLSConfig: &tls.Config{Certificates: []tls.Certificate{pair}},
 		},
-		client: &http.Client{
-			Timeout: time.Duration(15 * time.Second),
-		},
+		client: client,
 	}
 
 	// define http server and server handler

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	v1beta1 "k8s.io/api/admission/v1beta1"
 	admissionregistrationv1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	corev1 "k8s.io/api/core/v1"
@@ -38,9 +39,9 @@ const (
 	admissionWebhookAnnotationEnvironmentKey = "injector.doppler.com/environment"
 )
 
-type WebhookServer struct {
+type webhookServer struct {
 	server      *http.Server
-	client      *http.Client
+	client      *retryablehttp.Client
 	apiKey      string
 	pipeline    string
 	environment string
@@ -122,7 +123,7 @@ func createPatch(pod *corev1.Pod, env []corev1.EnvVar) ([]byte, error) {
 }
 
 // main mutation process
-func (whsvr *WebhookServer) mutate(ar *v1beta1.AdmissionReview) *v1beta1.AdmissionResponse {
+func (whsvr *webhookServer) mutate(ar *v1beta1.AdmissionReview) *v1beta1.AdmissionResponse {
 	req := ar.Request
 	var pod corev1.Pod
 	if err := json.Unmarshal(req.Object.Raw, &pod); err != nil {
@@ -179,7 +180,7 @@ func (whsvr *WebhookServer) mutate(ar *v1beta1.AdmissionReview) *v1beta1.Admissi
 }
 
 // Serve method for webhook server
-func (whsvr *WebhookServer) serve(w http.ResponseWriter, r *http.Request) {
+func (whsvr *webhookServer) serve(w http.ResponseWriter, r *http.Request) {
 	var body []byte
 	if r.Body != nil {
 		if data, err := ioutil.ReadAll(r.Body); err == nil {
@@ -233,7 +234,7 @@ func (whsvr *WebhookServer) serve(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (whsvr *WebhookServer) getPipelineAndEnvironment(metadata *metav1.ObjectMeta) (string, string) {
+func (whsvr *webhookServer) getPipelineAndEnvironment(metadata *metav1.ObjectMeta) (string, string) {
 	annotations := metadata.GetAnnotations()
 	if annotations == nil {
 		annotations = map[string]string{}
