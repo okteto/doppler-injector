@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
-const backup = '/var/secret/doppler/.env'
-const result = '/var/secret/doppler/api.env'
+const backup = '/var/secret/doppler/.doppler'
+const result = '/var/secret/doppler/.env'
 
 try{
   require("doppler-client")({

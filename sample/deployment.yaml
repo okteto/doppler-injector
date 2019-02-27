@@ -15,26 +15,26 @@ spec:
         - name: shared-data
           emptyDir: {}
       initContainers:
-      - image: okteto/doppler-injector:0.1.1
+      - image: dopplerhq/injector:0.1.1
         name: doppler
         volumeMounts:
           - name: shared-data
             mountPath: /var/secret/doppler
         env:
           - name: DOPPLER_API_KEY
-            value: "a7ax2wJTjzidGENndhaBKOS5dJlWVFdkaJwBqFKt"
+            value: "<API Key>"
           - name: DOPPLER_PIPELINE
-            value: "194"
+            value: "<Pipeline ID>"
           - name: DOPPLER_ENVIRONMENT
-            value: "dev_ramiro"
-        imagePullPolicy: Always
+            value: "<Environment Name>"
       containers:
-      - image: node:11-alpine
+      - image: dopplerhq/sample:latest
         name: main
         volumeMounts:
           - name: shared-data
             mountPath: /var/secret/doppler
+            readOnly: true
         command: 
         - sh
         - -c
-        - . /var/secret/doppler/api.env && tail -f /dev/null
+        - source /var/secret/doppler/.env && yarn start
