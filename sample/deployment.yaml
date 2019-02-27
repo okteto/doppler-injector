@@ -15,7 +15,7 @@ spec:
         - name: shared-data
           emptyDir: {}
       initContainers:
-      - image: okteto/doppler-injector:0.1.0
+      - image: okteto/doppler-injector:0.1.1
         name: doppler
         volumeMounts:
           - name: shared-data

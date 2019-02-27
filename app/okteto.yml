@@ -1,7 +1,7 @@
 swap:
   deployment:
     name: kubernetes-injector
-    image: okteto/doppler-injector:0.1.0
+    image: okteto/doppler-injector:0.1.1
 mount:
   target: /usr/src/app
 environment:
