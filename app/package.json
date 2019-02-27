@@ -1,0 +1,14 @@
+{
+  "name": "doppler-injector",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/DopplerHQ/kubernetes-injector",
+  "license": "Apache-2.0",
+  "private": false,
+  "dependencies": {
+    "doppler-client": "^2.0.1"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

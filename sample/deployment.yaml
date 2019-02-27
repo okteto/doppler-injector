@@ -1,0 +1,40 @@
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kubernetes-injector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: doppler-injector
+    spec:
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - name: shared-data
+          emptyDir: {}
+      initContainers:
+      - image: okteto/doppler-injector:0.1.0
+        name: doppler
+        volumeMounts:
+          - name: shared-data
+            mountPath: /var/secret/doppler
+        env:
+          - name: DOPPLER_API_KEY
+            value: "a7ax2wJTjzidGENndhaBKOS5dJlWVFdkaJwBqFKt"
+          - name: DOPPLER_PIPELINE
+            value: "194"
+          - name: DOPPLER_ENVIRONMENT
+            value: "dev_ramiro"
+        imagePullPolicy: Always
+      containers:
+      - image: node:11-alpine
+        name: main
+        volumeMounts:
+          - name: shared-data
+            mountPath: /var/secret/doppler
+        command: 
+        - sh
+        - -c
+        - . /var/secret/doppler/api.env && tail -f /dev/null

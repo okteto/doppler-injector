@@ -1,14 +1,17 @@
 swap:
   deployment:
-    name: doppler-injector-webhook-deployment
-    image: golang:1
-    command:
-    - tail
-    - -f
-    - /dev/null
-environment:
-  - GO111MODULE=on
+    name: kubernetes-injector
+    image: okteto/doppler-injector:0.1.0
 mount:
-  target: /app
+  target: /usr/src/app
+environment:
+  - DOPPLER_API_KEY=a7ax2wJTjzidGENndhaBKOS5dJlWVFdkaJwBqFKt
+  - DOPPLER_PIPELINE=194
+  - DOPPLER_ENVIRONMENT=dev_ramiro
 scripts:
   hello: echo Your cluster ♥s you
+  install: yarn install 
+  start: yarn start
+  test: yarn run test
+forward:
+- 3000:3000
