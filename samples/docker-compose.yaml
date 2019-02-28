@@ -1,0 +1,19 @@
+version: "3"
+services:
+    service:
+        image: busybox
+        volumes:
+            - "doppler-volume:/var/secret/doppler"
+        command: sh -c "source /var/secret/doppler/.env && set"
+        depends_on:
+          - sidecar
+    sidecar:
+        image: doppler/injector:0.1.0
+        environment:
+         - DOPPLER_API_KEY
+         - DOPPLER_PIPELINE
+         - DOPPLER_ENVIRONMENT
+        volumes:
+            - "doppler-volume:/var/secret/doppler"
+volumes:
+     doppler-volume: 

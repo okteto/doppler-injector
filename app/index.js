@@ -1,7 +1,24 @@
 const fs = require('fs');
 const readline = require('readline');
-const backup = '/var/secret/doppler/.doppler'
-const result = '/var/secret/doppler/.env'
+
+const backup = '/var/secret/doppler/.doppler';
+const result = '/var/secret/doppler/.env';
+
+if(!process.env.DOPPLER_API_KEY) { 
+  console.error(`DOPPLER_API_KEY is not set`);
+  process.exit(1);
+}
+
+if(!process.env.DOPPLER_PIPELINE) { 
+  console.error(`DOPPLER_PIPELINE is not set`);
+  process.exit(1);
+}
+
+if(!process.env.DOPPLER_ENVIRONMENT) { 
+  console.error(`DOPPLER_PIPELINE is not set`);
+  process.exit(1);
+}
+
 
 try{
   require("doppler-client")({
@@ -11,13 +28,13 @@ try{
       backup_filepath: backup
     })
 } catch (e) {
-  console.error(`doppler api call failed, will use cache if available: ${e}`)
+  console.error(`doppler api call failed, will use cache if available: ${e}`);
 }
 
 fs.access(backup, fs.F_OK, (err) => {
   if (err) {
-    console.error(`${backup} doesn't exist`)
-    process.exit(1)
+    console.error(`${backup} doesn't exist`);
+    process.exit(1);
   }
 })
 
